@@ -2,15 +2,17 @@ import vk_api
 import time
 from VkUser import VkUser, vk
 from collections import OrderedDict
-from pprint import pprint
+
 
 vk_bot = vk_api.VkApi(token='95086b6f24729572677b98973a3454ab210ce076876339ddebce2ad5d63a6e96cae74db1ee5247ddc4b30')
 vk_bot.auth()
 data = {}
 values = {'out': 0, 'count': 100, 'time_offset': 60}
 
+
 def send_message(user_id, message):
-    vk_bot.method('messages.send', {'user_id':user_id,'message':message})
+    vk_bot.method('messages.send', {'user_id': user_id, 'message': message})
+
 
 def main():
     while True:
@@ -26,28 +28,24 @@ def main():
                     send_message(item['user_id'], 'Шо це таке? Мне нужна ссылка на профиль VK')
                     continue
 
+
                 likes = target.get_likes_list()
-                likers = ','.join([str(i) for i in likes.keys()])
-                names = vk.users.get(user_ids=likers , fields='first_name, last_name')
-                names = {i['id']: ' '.join([i['first_name'], i['last_name']]) for i in names}
+                likes = {i['name']: i['count'] for i in likes.values()}
+                likes = OrderedDict(sorted(likes.items(), key=lambda t: -t[1]))
 
-                shit = [(str(likes[i]) + '  :  ' + names[i]) for i in likes]
-                shit = {names[i] : likes[i] for i in likes}
-                shit = OrderedDict(sorted(shit.items(), key=lambda t: -t[1]))
-
-                message = 'Топ-30'
+                message = target.get_name() + '\n_______\n'
                 count = 0
-                for i in shit:
+                for i in likes:
                     if count > 30:
                         break
-                    message += '\n' + str(shit[i]) + ' ❤  :  ' + i
+                    message += '\n' + str(likes[i]) + ' ❤  :  ' + i
                     count += 1
 
                 send_message(item[u'user_id'], message)
 
                 if item['body'].lower() == 'привет':
                     send_message(item[u'user_id'], u'Привет!')
-        time.sleep(1)
+        time.sleep(0.3)
 
 if __name__ == '__main__':
     main()
