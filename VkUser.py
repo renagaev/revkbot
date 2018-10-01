@@ -1,6 +1,5 @@
 import vk_api
 from time import time
-from pprint import pprint
 
 session = vk_api.VkApi(token='52d01ed5af4f982613daf93a12d2b7432551bb5968f5d7c14822dad420e2c480429454da6eae749e1da42')
 tools = vk_api.VkTools(session)
@@ -21,7 +20,6 @@ class VkUser(object):
         def count(request_dict):
             """возвращает количество лайков для каждого vk id"""
             out = {}
-            pprint(request_dict)
             for item in request_dict.values():
                 for man in item['items']:
                     name = ' '.join([man['first_name'], man['last_name']])
@@ -87,13 +85,3 @@ class VkUser(object):
                                                                'fields': 'name'})
         groups = [i for i in groups['items'] if i['type'] != 'profile']
         return groups
-
-
-def main():
-    tic = time()
-    dan = VkUser('nd_production')
-    pprint(dan.get_likes_list())
-    toc = time()
-    print(toc - tic)
-if __name__ == '__main__':
-    main()
